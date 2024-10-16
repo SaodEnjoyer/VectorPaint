@@ -63,7 +63,7 @@ public class SelectedMover : ShapeButton
         {
             
             XBefore = e.X;
-            YBefore = e.Y;
+            YBefore = e.Y;            
             Activate();
         };
 
@@ -75,18 +75,18 @@ public class SelectedMover : ShapeButton
                 float deltaX = e.X - XBefore;
                 float deltaY = e.Y - YBefore;
 
-                
                 foreach (var shape in shapes)
                 {
                     if (shape.Selected)
                     {
                         shape.Move(shape.X + deltaX, shape.Y + deltaY);
-                    }                    
+                    }
                 }
                 
                 XBefore = e.X;
                 YBefore = e.Y;
 
+                selectDisplayer.Selected = false;
                 pictureBox.Invalidate(); 
             }
             

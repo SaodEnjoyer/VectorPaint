@@ -16,7 +16,7 @@ namespace VectorPaint
 
         public static List<Shape> shapes = new List<Shape>();
 
-        public List<Shape> GetShapes() { return shapes; }
+        public static List<Shape> GetShapes() { return shapes; }
         public void Add(Shape shapeToCreate)
         {
             shapes.Add(shapeToCreate.Clone());
@@ -49,9 +49,7 @@ namespace VectorPaint
         public void RefreshPB(Graphics g)
         {
             g.Clear(Color.Black);
-            selectDisplayer.Clear();
-            selectDisplayer.SetUp(GetShapes());
-            selectDisplayer.VisibleCheck(g);
+            ShowSD(g);
             foreach (Shape shape in GetShapes())
             {
                 shape.Draw(g);
@@ -59,6 +57,11 @@ namespace VectorPaint
             selectDisplayer.Draw(g);            
         }
 
+        public void ShowSD(Graphics g)
+        {
+            selectDisplayer.SetUp(GetShapes());
+            selectDisplayer.VisibleCheck(g);
+        }
 
 
         public void DeSelectAll()

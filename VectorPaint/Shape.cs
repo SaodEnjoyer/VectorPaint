@@ -15,10 +15,10 @@ namespace VectorPaint
         {
             get; set;
         }
-        private float _x;
-        private float _y;
-        private float _w;
-        private float _h;
+        protected float _x;
+        protected float _y;
+        protected float _w;
+        protected float _h;
         public virtual float X
         {
             get { return _x; }

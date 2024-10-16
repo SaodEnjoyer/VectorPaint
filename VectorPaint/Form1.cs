@@ -59,12 +59,11 @@ namespace VectorPaint
             {
                 bool deSelect = true;                
 
-                foreach (Shape shape in picture.GetShapes())
+                foreach (Shape shape in Picture.GetShapes())
                 {
                     if (shape.Touch(me.X, me.Y))
                     {
-                        
-                        
+                                               
                         if (!((ModifierKeys & Keys.Shift) == Keys.Shift))
                         {
                                 
@@ -82,7 +81,8 @@ namespace VectorPaint
                             {
                                 picture.Select(shape);
                             }
-                                   
+
+                            picture.selectDisplayer.Selected = false;
                         }
                         deSelect = false;
                         break;
@@ -93,6 +93,7 @@ namespace VectorPaint
                 if (deSelect)
                 {
                     picture.DeSelectAll();
+                    picture.selectDisplayer.Clear();
                 }
             }
             pictureBox1.Invalidate();
@@ -117,7 +118,9 @@ namespace VectorPaint
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
+            
             picture.RefreshPB(e.Graphics);
+            
         }
 
         private void toolStrip2_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
