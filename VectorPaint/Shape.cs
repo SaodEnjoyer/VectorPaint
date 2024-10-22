@@ -10,7 +10,7 @@ namespace VectorPaint
 {
     public abstract class Shape 
     {
-        
+        protected const float min_size = 25;
         public bool Selected
         {
             get; set;
@@ -50,55 +50,36 @@ namespace VectorPaint
         }
         public virtual float W
         {
-            get 
-            {
-                return _w;
-            }
+            get { return _w; }
             set
             {
-                if (value > 25)
-                {
-                    _w = value;
-                }
-                else
-                {
-                    _w = 25;
-                }
+                _w = value > min_size ? value : min_size;
             }
         }
+
         public virtual float H
         {
-            get
-            {
-                return _h;
-            }
+            get { return _h; }
             set
             {
-                if (value > 25)
-                {
-                    _h = value;
-                }
-                else
-                {
-                    _h = 25;
-                }
+                _h = value > min_size ? value : min_size;
             }
         }
 
-       
 
 
-        public void Resize(float ax, float ay)
+
+        public virtual void Resize(float ax, float ay)
         {
             W = ax;
             H = ay;
         }
-        public void Move(float ax, float ay)
+        public virtual void Move(float ax, float ay)
         {
             X = ax;
             Y = ay;
         }
-        public void Move(Point point)
+        public virtual void Move(Point point)
         {
             X = point.X;
             Y = point.Y;

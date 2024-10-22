@@ -59,6 +59,7 @@ namespace VectorPaint
                             break;
 
                         case 2: // Нижний правый угол
+                            selectDisplayer.Move(selectDisplayer.X, selectDisplayer.Y);
                             selectDisplayer.Resize(selectDisplayer.W + deltaX, selectDisplayer.H + deltaY);
                             break;
 
@@ -78,6 +79,8 @@ namespace VectorPaint
                 DeActivate();
                 pictureBox.Invalidate();
             };
+
+            base.SelectAction(shapes, pictureBox);
         }
 
         public override Point GetPos()

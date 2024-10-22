@@ -20,12 +20,29 @@ namespace VectorPaint
             {"Rect" , new Rect()},
             {"Ellipse" , new Ellipse()}
         };
+
+        
+
         public Form1()
         {
             InitializeComponent();
 
             
             picture.pictureBox = pictureBox1;
+
+            FillShapeTS();
+
+            picture.Init(Controls);
+
+            Invalidate();
+
+            pictureBox1.Refresh();
+
+            Border = pictureBox1.Location;
+        }
+
+        void FillShapeTS()
+        {
             foreach (var type in ShapeTypes)
             {
                 ToolStripButton toolStripButton = new ToolStripButton(type.Key + "Button");
@@ -33,14 +50,7 @@ namespace VectorPaint
                 toolStripButton.Click += shapeButton_Click;
                 toolStrip2.Items.Add(toolStripButton);
             }
-
-            picture.Init(Controls);
-            Invalidate();
-            pictureBox1.Refresh();
-            Border = pictureBox1.Location;
         }
-
-
         private void shapeButton_Click(object sender, EventArgs e)
         {
             ShapeTypes.TryGetValue(((ToolStripButton)sender).Text, out shapeToCreate) ;
@@ -59,7 +69,7 @@ namespace VectorPaint
             {
                 bool deSelect = true;                
 
-                foreach (Shape shape in Picture.GetShapes())
+                foreach (Shape shape in picture)
                 {
                     if (shape.Touch(me.X, me.Y))
                     {
@@ -82,7 +92,7 @@ namespace VectorPaint
                                 picture.Select(shape);
                             }
 
-                            picture.selectDisplayer.Selected = false;
+                            picture.SetFrameActive(false);
                         }
                         deSelect = false;
                         break;
@@ -93,7 +103,7 @@ namespace VectorPaint
                 if (deSelect)
                 {
                     picture.DeSelectAll();
-                    picture.selectDisplayer.Clear();
+                    picture.ClearFrame();
                 }
             }
             pictureBox1.Invalidate();
@@ -136,12 +146,11 @@ namespace VectorPaint
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             MouseEventArgs me = (MouseEventArgs)e;
-            foreach (var handler in picture.selectDisplayer.selectedButtons)
+            foreach (var handler in picture.GetHandlerButtons())
             {
                 if (handler.Touch(me.X, me.Y))
                 {
-                    handler.MouseDown?.Invoke(sender, me);
-                    
+                    handler.OnMouseDown(sender, me);                    
                 }
             }
         }
@@ -149,11 +158,11 @@ namespace VectorPaint
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             
-            foreach (var button in picture.selectDisplayer.selectedButtons)
+            foreach (var button in picture.GetHandlerButtons())
             {
                 if (button.Visible)
                 {
-                    button.MouseMove?.Invoke(sender, e);
+                    button.OnMouseMove(sender, e);
                 }
             }
         }
@@ -161,9 +170,9 @@ namespace VectorPaint
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             
-            foreach (var button in picture.selectDisplayer.selectedButtons)
+            foreach (var button in picture.GetHandlerButtons())
             {
-                button.MouseUp?.Invoke(sender, e);
+                button.OnMouseUp(sender, e);
             }
         }
 

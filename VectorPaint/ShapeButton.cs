@@ -45,12 +45,10 @@ namespace VectorPaint
         {
             Clear();
             IsActivate = true;
-            //Cursor.Hide();
         }
         public virtual void DeActivate()
         {            
             Clear();
-            //Cursor.Show();
         }
 
         public virtual void Clear()
@@ -60,7 +58,7 @@ namespace VectorPaint
 
         public virtual void SelectAction(List<Shape> shapes, PictureBox pictureBox)
         {
-
+           
         }
         public virtual Point GetPos()
         {

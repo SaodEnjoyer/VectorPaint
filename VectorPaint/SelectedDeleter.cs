@@ -62,7 +62,7 @@ namespace VectorPaint
                 }
                 pictureBox.Invalidate();
             };
-            
+            base.SelectAction(shapes, pictureBox);
             
         }
 

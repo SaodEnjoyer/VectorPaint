@@ -60,8 +60,7 @@ public class SelectedMover : ShapeButton
     public override void SelectAction(List<Shape> shapes, PictureBox pictureBox)
     {
         MouseDown += (sender, e) =>
-        {
-            
+        {            
             XBefore = e.X;
             YBefore = e.Y;            
             Activate();
@@ -75,14 +74,8 @@ public class SelectedMover : ShapeButton
                 float deltaX = e.X - XBefore;
                 float deltaY = e.Y - YBefore;
 
-                foreach (var shape in shapes)
-                {
-                    if (shape.Selected)
-                    {
-                        shape.Move(shape.X + deltaX, shape.Y + deltaY);
-                    }
-                }
-                
+                selectDisplayer.Move(X + deltaX, Y + deltaY);
+
                 XBefore = e.X;
                 YBefore = e.Y;
 
@@ -98,6 +91,8 @@ public class SelectedMover : ShapeButton
             DeActivate();
             pictureBox.Invalidate(); 
         };
+
+        base.SelectAction(shapes, pictureBox);
     }
 
     public override Point GetPos()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -9,78 +10,104 @@ using static System.Windows.Forms.Control;
 
 namespace VectorPaint
 {
-    public class Picture
+    public class Picture : IEnumerable<Shape>
     {
         public PictureBox pictureBox;
         public SelectDisplayer selectDisplayer = new SelectDisplayer();
 
-        public static List<Shape> shapes = new List<Shape>();
+        private static List<Shape> _shapes = new List<Shape>();
 
-        public static List<Shape> GetShapes() { return shapes; }
         public void Add(Shape shapeToCreate)
         {
-            shapes.Add(shapeToCreate.Clone());
+            _shapes.Add(shapeToCreate.Clone());
+        }
+        public ShapeButton[] GetHandlerButtons()
+        {
+            return selectDisplayer.selectedButtons;
         }
         public static void Remove(Shape shapeToRemove)
         {
-            if (shapes.Contains(shapeToRemove))
+            if (_shapes.Contains(shapeToRemove))
             {
-                shapes.Remove(shapeToRemove);
+                _shapes.Remove(shapeToRemove);
             }
-           
         }
 
+        public bool IsFrameActive()
+        {
+            return selectDisplayer.Selected;
+        }
+
+        public void SetFrameActive(bool b)
+        {
+            selectDisplayer.Selected = b;
+        }
 
         public void Select(Shape shape)
         {
             shape.Selected = true;
         }
+
         public void DeSelect(Shape shape)
         {
             shape.Selected = false;
         }
-        public void ClearSelected() 
-        { 
-            foreach (Shape shape in GetShapes())
+
+        public void ClearSelected()
+        {
+            foreach (Shape shape in this)
             {
                 shape.Selected = false;
             }
         }
+
         public void RefreshPB(Graphics g)
         {
             g.Clear(Color.Black);
             ShowSD(g);
-            foreach (Shape shape in GetShapes())
+            foreach (Shape shape in this)
             {
                 shape.Draw(g);
             }
-            selectDisplayer.Draw(g);            
+            selectDisplayer.Draw(g);
         }
 
         public void ShowSD(Graphics g)
         {
-            selectDisplayer.SetUp(GetShapes());
+            selectDisplayer.SetUp();
             selectDisplayer.VisibleCheck(g);
         }
 
-
         public void DeSelectAll()
         {
-            foreach (Shape shape in GetShapes())
+            foreach (Shape shape in this)
             {
                 DeSelect(shape);
             }
         }
 
-        public void Init(ControlCollection control)
+        public void ClearFrame()
         {
-            selectDisplayer.Init(control);
-            foreach (var button in selectDisplayer.selectedButtons)
-            {
-                button.SelectAction(GetShapes(), pictureBox);
-            }
-
+            selectDisplayer.Clear();
         }
 
+        public void Init(ControlCollection control)
+        {
+            selectDisplayer.Init(control, this);
+            foreach (var button in selectDisplayer.selectedButtons)
+            {
+                button.SelectAction(this.ToList(), pictureBox);
+            }
+        }
+
+        public IEnumerator<Shape> GetEnumerator()
+        {
+            return _shapes.GetEnumerator(); 
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

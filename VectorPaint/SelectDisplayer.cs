@@ -18,16 +18,15 @@ namespace VectorPaint
             new SelectedDeleter(),
             new SelectedMover()
         };
+        Picture shapes;
 
-        
-
-        public void Init(ControlCollection control)
+        public void Init(ControlCollection control, Picture shapes)
         {
             foreach (var button in selectedButtons)
             {
                 button.Init(control, this);
             }
-
+            this.shapes = shapes;
         }
 
         public override float X
@@ -55,14 +54,15 @@ namespace VectorPaint
             get { return _w; }
             set
             {
-                if (value > 25)
+                if (value > min_size)
                 {
                     _w = value;
                 }
                 else
                 {
-                    _w = 25;
+                    _w = min_size;
                 }
+
                 UpdateShapes();
             }
         }
@@ -72,14 +72,15 @@ namespace VectorPaint
             get { return _h; }
             set
             {
-                if (value > 25)
+                if (value > min_size)
                 {
                     _h = value;
                 }
                 else
                 {
-                    _h = 25;
+                    _h = min_size;
                 }
+
                 UpdateShapes();
             }
         }
@@ -96,25 +97,27 @@ namespace VectorPaint
                 return;
             }
 
-            List<Shape> shapes = Picture.GetShapes();
-
             float scaleW = W / lastW;
             float scaleH = H / lastH;
+
+            if (!IsCanBeScaled(scaleW, scaleH))
+            {
+                return;
+            }
 
             foreach (Shape shape in shapes)
             {
                 if (shape.Selected)
                 {
-                    float relativeX = shape.X - lastX;
-                    float relativeY = shape.Y - lastY;
-
-                    float newX = X + relativeX * scaleW;
-                    float newY = Y + relativeY * scaleH;
                     float newW = shape.W * scaleW;
                     float newH = shape.H * scaleH;
-
-                    shape.Move(newX, newY);
                     shape.Resize(newW, newH);
+
+                    float relativeX = shape.X - lastX;
+                    float relativeY = shape.Y - lastY;
+                    float newX = X + relativeX * scaleW;
+                    float newY = Y + relativeY * scaleH;
+                    shape.Move(newX, newY);
                 }
             }
 
@@ -124,6 +127,35 @@ namespace VectorPaint
             lastH = H;
         }
 
+        public bool IsCanBeScaled(float scaleW, float scaleH)
+        {
+            foreach (Shape shape in shapes)
+            {
+                if (shape.Selected)
+                {
+                    float newW = shape.W * scaleW;
+                    float newH = shape.H * scaleH;
+
+                    if (newW < min_size || newH < min_size)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public override void Resize(float ax, float ay)
+        {
+            float scaleW = ax / lastW;
+            float scaleH = ay / lastH;
+
+            if (!IsCanBeScaled(scaleW, scaleH))
+            {
+                return;
+            }
+            base.Resize(ax, ay);
+        }
 
         public void Clear()
         {
@@ -134,7 +166,7 @@ namespace VectorPaint
             Selected = false;
         }
 
-        public void SetUp(List<Shape> shapes)
+        public void SetUp()
         {
             if (shapes == null || !shapes.Any(s => s.Selected))
             {
