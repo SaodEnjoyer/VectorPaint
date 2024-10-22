@@ -20,6 +20,16 @@ namespace VectorPaint
         };
         Picture shapes;
 
+        public IEnumerable<Shape> GetShapes()
+        {
+            return shapes;
+        }
+
+        public PictureBox GetPictureBox()
+        {
+            return shapes.pictureBox;
+        }
+
         public void Init(ControlCollection control, Picture shapes)
         {
             foreach (var button in selectedButtons)

@@ -96,7 +96,7 @@ namespace VectorPaint
             selectDisplayer.Init(control, this);
             foreach (var button in selectDisplayer.selectedButtons)
             {
-                button.SelectAction(this.ToList(), pictureBox);
+                button.SelectAction();
             }
         }
 

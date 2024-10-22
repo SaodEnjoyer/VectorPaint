@@ -28,7 +28,7 @@ namespace VectorPaint
         public override float W { get; set; }
         public override float H { get; set; }
 
-        public override void SelectAction(List<Shape> shapes, PictureBox pictureBox)
+        public override void SelectAction()
         {
             MouseDown += (sender, e) =>
             {
@@ -70,17 +70,16 @@ namespace VectorPaint
                     }
                     XBefore = mouseEventArgs.X;
                     YBefore = mouseEventArgs.Y;
-                    pictureBox.Invalidate();
+                    selectDisplayer.GetPictureBox().Invalidate();
                 }
             };
 
             MouseUp += (sender, e) =>
             {
                 DeActivate();
-                pictureBox.Invalidate();
+                selectDisplayer.GetPictureBox().Invalidate();
             };
 
-            base.SelectAction(shapes, pictureBox);
         }
 
         public override Point GetPos()

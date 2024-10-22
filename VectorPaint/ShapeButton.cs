@@ -56,7 +56,7 @@ namespace VectorPaint
             IsActivate = false;
         }
 
-        public virtual void SelectAction(List<Shape> shapes, PictureBox pictureBox)
+        public virtual void SelectAction()
         {
            
         }

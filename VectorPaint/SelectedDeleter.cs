@@ -42,13 +42,13 @@ namespace VectorPaint
 
         }
 
-        public override void SelectAction(List<Shape> shapes, PictureBox pictureBox)
+        public override void SelectAction()
         {
             MouseDown += (sender, e) =>
             {
                 List<Shape> listToDelete = new List<Shape>();
-
-                foreach (var shape in shapes)
+                
+                foreach (var shape in selectDisplayer.GetShapes())
                 {
                     if (shape.Selected)
                     {
@@ -60,9 +60,8 @@ namespace VectorPaint
                 {
                     shape.Delete();
                 }
-                pictureBox.Invalidate();
+                selectDisplayer.GetPictureBox().Invalidate();
             };
-            base.SelectAction(shapes, pictureBox);
             
         }
 

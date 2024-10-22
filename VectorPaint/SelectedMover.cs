@@ -57,7 +57,7 @@ public class SelectedMover : ShapeButton
         
     }
 
-    public override void SelectAction(List<Shape> shapes, PictureBox pictureBox)
+    public override void SelectAction()
     {
         MouseDown += (sender, e) =>
         {            
@@ -80,7 +80,7 @@ public class SelectedMover : ShapeButton
                 YBefore = e.Y;
 
                 selectDisplayer.Selected = false;
-                pictureBox.Invalidate(); 
+                selectDisplayer.GetPictureBox().Invalidate();
             }
             
         };
@@ -89,10 +89,9 @@ public class SelectedMover : ShapeButton
         MouseUp += (sender, e) =>
         {
             DeActivate();
-            pictureBox.Invalidate(); 
+            selectDisplayer.GetPictureBox().Invalidate();
         };
 
-        base.SelectAction(shapes, pictureBox);
     }
 
     public override Point GetPos()
