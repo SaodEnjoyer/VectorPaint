@@ -69,46 +69,50 @@ namespace VectorPaint
             MouseEventArgs me = (MouseEventArgs)e;
             if (shapeToCreate != null)
             {
-                shapeToCreate.Move(me.X, me.Y);                
+                shapeToCreate.Move(me.X, me.Y);
                 picture.Add(shapeToCreate);
             }
             else
             {
-                bool deSelect = true;                
+                bool deSelect = true;
 
                 foreach (Shape shape in picture)
                 {
                     if (shape.Touch(me.X, me.Y))
-                    {                                               
-                        if (!((ModifierKeys & Keys.Shift) == Keys.Shift))
-                        {                                
+                    {
+                        if ((ModifierKeys & Keys.Shift) != Keys.Shift)
+                        {
+                            picture.DeSelectAll();
                             picture.ClearSelected();
                             picture.Select(shape);
                         }
                         else
-                        {                                
+                        {
                             if (shape.Selected)
                             {
                                 picture.DeSelect(shape);
-                            }                                    
+                            }
                             else
                             {
                                 picture.Select(shape);
                             }
-
-                            picture.SetFrameActive(false);
                         }
+
+                        picture.SetFrameActive(false);
                         deSelect = false;
-                        break;        
+                        break;
                     }
                 }
+
                 if (deSelect)
                 {
                     picture.DeSelectAll();
                     picture.ClearFrame();
                 }
             }
+
             pictureBox1.Invalidate();
+
         }
 
         private void selectButton_Click(object sender, EventArgs e)
