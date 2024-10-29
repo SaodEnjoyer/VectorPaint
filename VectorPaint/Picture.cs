@@ -75,7 +75,7 @@ namespace VectorPaint
         public void ShowSD(Graphics g)
         {
             selectDisplayer.SetUp();
-            selectDisplayer.VisibleCheck(g);
+            selectDisplayer.VisibleSet(g);
         }
 
         public void DeSelectAll()

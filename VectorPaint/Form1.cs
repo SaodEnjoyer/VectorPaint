@@ -15,19 +15,17 @@ namespace VectorPaint
         public static Point Border;
         public Shape shapeToCreate = null;
         Picture picture = new Picture();
+
         Dictionary<string, Shape> ShapeTypes = new Dictionary<string, Shape>()
         {
             {"Rect" , new Rect()},
             {"Ellipse" , new Ellipse()}
         };
 
-        
-
         public Form1()
         {
             InitializeComponent();
 
-            
             picture.pictureBox = pictureBox1;
 
             FillShapeTS();
@@ -45,12 +43,22 @@ namespace VectorPaint
         {
             foreach (var type in ShapeTypes)
             {
-                ToolStripButton toolStripButton = new ToolStripButton(type.Key + "Button");
-                toolStripButton.Text = type.Key;
-                toolStripButton.Click += shapeButton_Click;
-                toolStrip2.Items.Add(toolStripButton);
+                AddShapeTS(type.Key);
             }
         }
+
+        void AddShapeTS(string name, Shape shape = null)
+        {
+            if (shape != null)
+            {
+                ShapeTypes.Add(name, shape);
+            }           
+            ToolStripButton toolStripButton = new ToolStripButton(name + "Button");
+            toolStripButton.Text = name;
+            toolStripButton.Click += shapeButton_Click;
+            toolStrip2.Items.Add(toolStripButton);
+        }
+
         private void shapeButton_Click(object sender, EventArgs e)
         {
             ShapeTypes.TryGetValue(((ToolStripButton)sender).Text, out shapeToCreate) ;
@@ -61,8 +69,7 @@ namespace VectorPaint
             MouseEventArgs me = (MouseEventArgs)e;
             if (shapeToCreate != null)
             {
-                shapeToCreate.X = me.X;
-                shapeToCreate.Y = me.Y;
+                shapeToCreate.Move(me.X, me.Y);                
                 picture.Add(shapeToCreate);
             }
             else
@@ -72,17 +79,14 @@ namespace VectorPaint
                 foreach (Shape shape in picture)
                 {
                     if (shape.Touch(me.X, me.Y))
-                    {
-                                               
+                    {                                               
                         if (!((ModifierKeys & Keys.Shift) == Keys.Shift))
-                        {
-                                
+                        {                                
                             picture.ClearSelected();
                             picture.Select(shape);
                         }
                         else
-                        {
-                                
+                        {                                
                             if (shape.Selected)
                             {
                                 picture.DeSelect(shape);
@@ -95,9 +99,7 @@ namespace VectorPaint
                             picture.SetFrameActive(false);
                         }
                         deSelect = false;
-                        break;
-                        
-                        
+                        break;        
                     }
                 }
                 if (deSelect)
@@ -109,28 +111,20 @@ namespace VectorPaint
             pictureBox1.Invalidate();
         }
 
-
         private void selectButton_Click(object sender, EventArgs e)
         {
-            shapeToCreate = null;
-            
+            shapeToCreate = null;   
         }
-
-
-
 
         private void Form1_Resize(object sender, EventArgs e)
         {
             pictureBox1.Refresh();
             pictureBox1.Invalidate();
-
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            
-            picture.RefreshPB(e.Graphics);
-            
+            picture.RefreshPB(e.Graphics);   
         }
 
         private void toolStrip2_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -169,12 +163,66 @@ namespace VectorPaint
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
-            
             foreach (var button in picture.GetHandlerButtons())
             {
                 button.OnMouseUp(sender, e);
             }
         }
 
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            if (!picture.Any(shape => shape.Selected))
+            {
+                MessageBox.Show("Выберите хотя бы одну фигуру.", "Нет выбранных фигур", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            Group group = new Group();
+            List<Shape> ShapesToDelete = new List<Shape>();
+
+            foreach (var shape in picture)
+            {
+                if (shape.Selected)
+                {
+                    group.AddShape(shape.Clone());
+                    ShapesToDelete.Add(shape);
+                }
+            }            
+
+            while (ShapesToDelete.Count > 0)
+            {
+                ShapesToDelete[0].Delete();
+                ShapesToDelete.RemoveAt(0);
+            }
+
+            picture.Add(group);
+        }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            if (!picture.Any(shape => shape.Selected))
+            {
+                MessageBox.Show("Выберите хотя бы одну фигуру.", "Нет выбранных фигур", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            Group group = new Group();
+
+            foreach (var shape in picture)
+            {
+                if (shape.Selected)
+                {
+                    group.AddShape(shape.Clone());
+                }
+            }
+
+            using (var groupNameForm = new GroupNameForm())
+            {
+                if (groupNameForm.ShowDialog(this) == DialogResult.OK)
+                {
+                    AddShapeTS(groupNameForm.GroupName, group);                    
+                }
+            }
+        }
     }
 }

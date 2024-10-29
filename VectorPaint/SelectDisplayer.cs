@@ -18,7 +18,7 @@ namespace VectorPaint
             new SelectedDeleter(),
             new SelectedMover()
         };
-        Picture shapes;
+        private Picture shapes;
 
         public IEnumerable<Shape> GetShapes()
         {
@@ -228,7 +228,7 @@ namespace VectorPaint
             Selected = true;
         }
 
-        public void VisibleCheck(Graphics g)
+        public void VisibleSet(Graphics g)
         {
             if (X == -1 && Y == -1)
             {
