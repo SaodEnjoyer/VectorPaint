@@ -28,5 +28,11 @@ namespace VectorPaint
         {
             return new Ellipse(X, Y, W, H);
         }
+        public override Creator GetCreator()
+        {
+            EllipseCreator ellipseCreator = new EllipseCreator();
+            ellipseCreator.SetShape(this.Clone());
+            return ellipseCreator;
+        }
     }
 }

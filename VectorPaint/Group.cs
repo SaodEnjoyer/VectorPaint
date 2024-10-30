@@ -190,5 +190,11 @@ namespace VectorPaint
 
             
         }
+        public override Creator GetCreator()
+        {
+            GroupCreator GroupCreator = new GroupCreator();
+            GroupCreator.SetShape(this.Clone());
+            return GroupCreator;
+        }
     }
 }

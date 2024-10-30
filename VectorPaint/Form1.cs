@@ -13,13 +13,13 @@ namespace VectorPaint
     public partial class Form1 : Form
     {
         public static Point Border;
-        public Shape shapeToCreate = null;
+        public Creator shapeCreator = new Creator();
         Picture picture = new Picture();
 
-        Dictionary<string, Shape> ShapeTypes = new Dictionary<string, Shape>()
+        Dictionary<string, Func<Creator>> ShapeCreators = new Dictionary<string, Func<Creator>>()
         {
-            {"Rect" , new Rect()},
-            {"Ellipse" , new Ellipse()}
+            { "Rect", () => new RectCreator()},
+            { "Ellipse",() => new EllipseCreator()}
         };
 
         public Form1()
@@ -41,7 +41,7 @@ namespace VectorPaint
 
         void FillShapeTS()
         {
-            foreach (var type in ShapeTypes)
+            foreach (var type in ShapeCreators)
             {
                 AddShapeTS(type.Key);
             }
@@ -49,9 +49,15 @@ namespace VectorPaint
 
         void AddShapeTS(string name, Shape shape = null)
         {
+
             if (shape != null)
             {
-                ShapeTypes.Add(name, shape);
+                if (ShapeCreators.Any(shape => shape.Key == name))
+                {
+                    MessageBox.Show("Введите уникальное название.", "Неправильное название", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+                ShapeCreators.Add(name, () => shape.GetCreator());
             }           
             ToolStripButton toolStripButton = new ToolStripButton(name + "Button");
             toolStripButton.Text = name;
@@ -61,16 +67,19 @@ namespace VectorPaint
 
         private void shapeButton_Click(object sender, EventArgs e)
         {
-            ShapeTypes.TryGetValue(((ToolStripButton)sender).Text, out shapeToCreate) ;
+            if (ShapeCreators.TryGetValue(((ToolStripButton)sender).Text, out var createShape))
+            {
+                var shapeCopy = createShape();
+                shapeCreator = shapeCopy;
+            }
         }
 
         private void pictureBox_Click(object sender, EventArgs e)
         {
             MouseEventArgs me = (MouseEventArgs)e;
-            if (shapeToCreate != null)
+            if (shapeCreator.CanCreateShape())
             {
-                shapeToCreate.Move(me.X, me.Y);
-                picture.Add(shapeToCreate);
+                picture.Add(shapeCreator.CreateShape(me.X, me.Y));
             }
             else
             {
@@ -117,7 +126,8 @@ namespace VectorPaint
 
         private void selectButton_Click(object sender, EventArgs e)
         {
-            shapeToCreate = null;   
+            shapeCreator.ClearShape();
+
         }
 
         private void Form1_Resize(object sender, EventArgs e)

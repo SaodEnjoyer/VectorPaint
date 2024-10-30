@@ -27,5 +27,11 @@ namespace VectorPaint
         {
             return new Rect(X, Y, W, H);
         }
+        public override Creator GetCreator()
+        {
+            RectCreator RectCreator = new RectCreator();
+            RectCreator.SetShape(this.Clone());
+            return RectCreator;
+        }
     }
 }

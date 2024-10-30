@@ -101,5 +101,10 @@ namespace VectorPaint
         {
             Picture.Remove(this);
         }
+
+        public virtual Creator GetCreator()
+        {
+            return null;
+        }
     }
 }
