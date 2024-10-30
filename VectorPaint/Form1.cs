@@ -16,10 +16,10 @@ namespace VectorPaint
         public Creator shapeCreator = new Creator();
         Picture picture = new Picture();
 
-        Dictionary<string, Func<Creator>> ShapeCreators = new Dictionary<string, Func<Creator>>()
+        Dictionary<string, Creator> ShapeCreators = new Dictionary<string, Creator>()
         {
-            { "Rect", () => new RectCreator()},
-            { "Ellipse",() => new EllipseCreator()}
+            { "Rect", new RectCreator()},
+            { "Ellipse", new EllipseCreator()}
         };
 
         public Form1()
@@ -57,7 +57,7 @@ namespace VectorPaint
                     MessageBox.Show("Введите уникальное название.", "Неправильное название", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
-                ShapeCreators.Add(name, () => shape.GetCreator());
+                ShapeCreators.Add(name, shape.GetCreator());
             }           
             ToolStripButton toolStripButton = new ToolStripButton(name + "Button");
             toolStripButton.Text = name;
@@ -69,8 +69,7 @@ namespace VectorPaint
         {
             if (ShapeCreators.TryGetValue(((ToolStripButton)sender).Text, out var createShape))
             {
-                var shapeCopy = createShape();
-                shapeCreator = shapeCopy;
+                shapeCreator = createShape.Clone();
             }
         }
 
