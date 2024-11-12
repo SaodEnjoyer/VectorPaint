@@ -7,26 +7,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VectorPaint.Strategies;
 
 namespace VectorPaint
 {
     public partial class Form1 : Form
     {
-        public static Point Border;
-        public Creator shapeCreator = new Creator();
+        public ShapeCreator shapeCreator;
         Picture picture = new Picture();
-
-        Dictionary<string, Creator> ShapeCreators = new Dictionary<string, Creator>()
-        {
-            { "Rect", new RectCreator()},
-            { "Ellipse", new EllipseCreator()}
-        };
+        StrategyController strategyController;
 
         public Form1()
         {
             InitializeComponent();
 
             picture.pictureBox = pictureBox1;
+
+            SelectControllerSetup();
+
+            ShapeCreatorSetup();
 
             FillShapeTS();
 
@@ -36,14 +35,29 @@ namespace VectorPaint
 
             pictureBox1.Refresh();
 
-            Border = pictureBox1.Location;
+        }
+
+        private void SelectControllerSetup()
+        {
+            strategyController = new StrategyController();
+
+            strategyController.SetStrategy(new SelectStrategy(picture));
+        }
+
+        private void ShapeCreatorSetup()
+        {
+            shapeCreator = new ShapeCreator(picture);
+
+            shapeCreator.AddCreator("Select", null);
+            shapeCreator.AddCreator("Rect", new RectCreator());
+            shapeCreator.AddCreator("Ellipse", new EllipseCreator());
         }
 
         void FillShapeTS()
         {
-            foreach (var type in ShapeCreators)
+            foreach (var type in shapeCreator.GetKeys())
             {
-                AddShapeTS(type.Key);
+                AddShapeTS(type);
             }
         }
 
@@ -52,12 +66,12 @@ namespace VectorPaint
 
             if (shape != null)
             {
-                if (ShapeCreators.Any(shape => shape.Key == name))
+                if (shapeCreator.GetKeys().Any(shape => shape == name))
                 {
                     MessageBox.Show("Введите уникальное название.", "Неправильное название", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
-                ShapeCreators.Add(name, shape.GetCreator());
+                shapeCreator.AddCreator(name, shape.GetCreator());
             }           
             ToolStripButton toolStripButton = new ToolStripButton(name + "Button");
             toolStripButton.Text = name;
@@ -67,67 +81,42 @@ namespace VectorPaint
 
         private void shapeButton_Click(object sender, EventArgs e)
         {
-            if (ShapeCreators.TryGetValue(((ToolStripButton)sender).Text, out var createShape))
+            shapeCreator.SetCreator(((ToolStripButton)sender).Text);
+
+            if (shapeCreator.GetCreator() == null)
             {
-                shapeCreator = createShape.Clone();
+                strategyController.SetStrategy(new SelectStrategy(picture));
+                return;
             }
+
+            strategyController.SetStrategy(new CreateStrategy(picture, shapeCreator));
+            picture.ClearSelected();
+            pictureBox1.Invalidate();
         }
 
         private void pictureBox_Click(object sender, EventArgs e)
         {
             MouseEventArgs me = (MouseEventArgs)e;
-            if (shapeCreator.CanCreateShape())
+
+            IStrategy originalStrategy = strategyController.GetStrategy();
+
+            bool isShiftPressed = (ModifierKeys & Keys.Shift) == Keys.Shift;          
+
+            if (isShiftPressed)
             {
-                picture.Add(shapeCreator.CreateShape(me.X, me.Y));
+                strategyController.SetStrategy(new GroupStrategy(picture));
             }
-            else
+
+            strategyController.GetStrategy().MouseDown(me);
+
+            if (isShiftPressed)
             {
-                bool deSelect = true;
-
-                foreach (Shape shape in picture)
-                {
-                    if (shape.Touch(me.X, me.Y))
-                    {
-                        if ((ModifierKeys & Keys.Shift) != Keys.Shift)
-                        {
-                            picture.DeSelectAll();
-                            picture.ClearSelected();
-                            picture.Select(shape);
-                        }
-                        else
-                        {
-                            if (shape.Selected)
-                            {
-                                picture.DeSelect(shape);
-                            }
-                            else
-                            {
-                                picture.Select(shape);
-                            }
-                        }
-
-                        picture.SetFrameActive(false);
-                        deSelect = false;
-                        break;
-                    }
-                }
-
-                if (deSelect)
-                {
-                    picture.DeSelectAll();
-                    picture.ClearFrame();
-                }
+                strategyController.SetStrategy(originalStrategy);
             }
 
             pictureBox1.Invalidate();
-
         }
 
-        private void selectButton_Click(object sender, EventArgs e)
-        {
-            shapeCreator.ClearShape();
-
-        }
 
         private void Form1_Resize(object sender, EventArgs e)
         {
@@ -152,34 +141,17 @@ namespace VectorPaint
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            MouseEventArgs me = (MouseEventArgs)e;
-            foreach (var handler in picture.GetHandlerButtons())
-            {
-                if (handler.Touch(me.X, me.Y))
-                {
-                    handler.OnMouseDown(sender, me);                    
-                }
-            }
+            strategyController.GetStrategy().HandlerDown(sender, e);
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            
-            foreach (var button in picture.GetHandlerButtons())
-            {
-                if (button.Visible)
-                {
-                    button.OnMouseMove(sender, e);
-                }
-            }
+            strategyController.GetStrategy().HandlerMove(sender, e);            
         }
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
-            foreach (var button in picture.GetHandlerButtons())
-            {
-                button.OnMouseUp(sender, e);
-            }
+            strategyController.GetStrategy().HandlerUp(sender, e);            
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)

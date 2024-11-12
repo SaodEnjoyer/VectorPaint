@@ -20,6 +20,7 @@ namespace VectorPaint
         };
         private Picture shapes;
 
+
         public IEnumerable<Shape> GetShapes()
         {
             return shapes;
@@ -249,6 +250,48 @@ namespace VectorPaint
 
         }
 
+        private void BeforeDraw()
+        {
+
+            List<Shape> selectedShapes = new List<Shape>();
+            foreach (Shape shape in shapes)
+            {
+                if (shape.Selected)
+                {
+                    selectedShapes.Add(shape);
+                }
+            }           
+
+            if (selectedShapes.Count() == 0)
+            {
+                Clear();
+                return;
+            }
+
+            float minX = selectedShapes.First().X;
+            float minY = selectedShapes.First().Y;
+            float maxX = selectedShapes.First().X + selectedShapes.First().W;
+            float maxY = selectedShapes.First().Y + selectedShapes.First().H;
+
+            foreach (var shape in selectedShapes)
+            {
+                minX = Math.Min(minX, shape.X);
+                minY = Math.Min(minY, shape.Y);
+                maxX = Math.Max(maxX, shape.X + shape.W);
+                maxY = Math.Max(maxY, shape.Y + shape.H);
+            }
+
+            X = minX;
+            Y = minY;
+            W = maxX - minX;
+            H = maxY - minY;
+
+            lastX = X;
+            lastY = Y;
+            lastW = W;
+            lastH = H;
+        }
+
         private int border = 3;
         public override void Draw(Graphics g)
         {
@@ -256,9 +299,11 @@ namespace VectorPaint
             {
                 return;
             }
+            BeforeDraw();
             g.DrawRectangle(Pens.Red, X - border, Y - border, W + 2 * border, H + 2 * border);
             foreach (var button in selectedButtons)
             {
+                button.Move(button.GetPos());
                 button.Draw(g);
             }
         }

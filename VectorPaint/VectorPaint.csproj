@@ -79,6 +79,12 @@
     <Compile Include="SelectedMover.cs" />
     <Compile Include="SelectedScaler.cs" />
     <Compile Include="Shape.cs" />
+    <Compile Include="ShapeCreator.cs" />
+    <Compile Include="Strategies\CreateStrategy.cs" />
+    <Compile Include="Strategies\GroupStrategy.cs" />
+    <Compile Include="Strategies\SelectStrategy.cs" />
+    <Compile Include="Strategies\IStrategy.cs" />
+    <Compile Include="Strategies\StrategyController.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

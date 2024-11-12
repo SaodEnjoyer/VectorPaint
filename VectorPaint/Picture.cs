@@ -64,7 +64,7 @@ namespace VectorPaint
         public void RefreshPB(Graphics g)
         {
             g.Clear(Color.Black);
-            ShowSD(g);
+            ShowSD(g);           
             foreach (Shape shape in this)
             {
                 shape.Draw(g);
