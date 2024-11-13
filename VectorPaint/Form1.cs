@@ -16,7 +16,7 @@ namespace VectorPaint
         public ShapeCreator shapeCreator;
         Picture picture = new Picture();
         StrategyController strategyController;
-
+        
         public Form1()
         {
             InitializeComponent();
@@ -30,6 +30,7 @@ namespace VectorPaint
             FillShapeTS();
 
             picture.Init(Controls);
+
 
             Invalidate();
 
@@ -227,6 +228,32 @@ namespace VectorPaint
 
             
             memento.UnDo();
+            picture.shapeCollectionRollBacks.Push(memento);
+            picture.ClearSelected();
+            pictureBox1.Invalidate();
+        }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            ShapeCollectionMemento memento = null;
+
+            while (memento == null)
+            {
+                if (picture.shapeCollectionRollBacks.Count() == 0)
+                {
+                    return;
+                }
+
+                memento = picture.shapeCollectionRollBacks.Pop();
+            }
+
+            if (memento == null)
+            {
+                return;
+            }
+
+            memento.Do();
+            picture.shapeCollectionHistory.Push(memento);
             picture.ClearSelected();
             pictureBox1.Invalidate();
         }

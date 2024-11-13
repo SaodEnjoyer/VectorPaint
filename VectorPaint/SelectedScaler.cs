@@ -91,6 +91,7 @@ namespace VectorPaint
                 DeActivate();
 
                 selectDisplayer.GetPicture().shapeCollectionHistory.Push(actions.Count() == 0 ? null : new ShapeCollectionMemento(actions.Clone()));
+                selectDisplayer.GetPicture().shapeCollectionRollBacks.Clear();
                 actions.Clear();
 
                 selectDisplayer.GetPictureBox().Invalidate();

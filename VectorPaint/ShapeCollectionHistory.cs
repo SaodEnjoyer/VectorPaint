@@ -27,5 +27,10 @@ namespace VectorPaint
         {
             mementos.Push(memento);
         }
+
+        public void Clear()
+        {
+            mementos.Clear();
+        }
     }
 }

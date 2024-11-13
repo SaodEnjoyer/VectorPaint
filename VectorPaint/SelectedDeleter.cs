@@ -57,6 +57,7 @@ namespace VectorPaint
                 }
                 actions.Do();
                 selectDisplayer.GetPicture().shapeCollectionHistory.Push(new ShapeCollectionMemento(actions));
+                selectDisplayer.GetPicture().shapeCollectionRollBacks.Clear();
                 selectDisplayer.GetPictureBox().Invalidate();
             };
             

@@ -18,6 +18,8 @@ namespace VectorPaint
 
         public ShapeCollectionHistory shapeCollectionHistory = new ShapeCollectionHistory();
 
+        public ShapeCollectionHistory shapeCollectionRollBacks = new ShapeCollectionHistory();
+
         private static List<Shape> _shapes = new List<Shape>();
 
         public void Add(Shape shapeToCreate)

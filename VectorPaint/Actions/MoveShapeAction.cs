@@ -10,7 +10,7 @@ namespace VectorPaint.Actions
     public class MoveShapeAction : IAction
     {
         private Shape _shape;
-        private Point _positionBefore;
+        private Point _positionBefore, _positionAfter;
 
         public MoveShapeAction(Shape shape)
         {
@@ -21,11 +21,12 @@ namespace VectorPaint.Actions
 
         public void Do()
         {
-            return;
+            _shape.Move(_positionAfter);
         }
 
         public void UnDo()
         {
+            _positionAfter = new Point((int)_shape.X, (int)_shape.Y);
             _shape.Move(_positionBefore);
         }
 

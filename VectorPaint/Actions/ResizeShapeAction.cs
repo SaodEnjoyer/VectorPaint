@@ -10,7 +10,7 @@ namespace VectorPaint.Actions
     public class ResizeShapeAction : IAction
     {
         private Shape _shape;
-        private Point _sizeBefore;
+        private Point _sizeBefore, _sizeAfter;
 
         public ResizeShapeAction(Shape shape)
         {
@@ -19,11 +19,12 @@ namespace VectorPaint.Actions
         }
         public void Do()
         {
-            return;
+            _shape.Resize(_sizeAfter);
         }
 
         public void UnDo()
         {
+            _sizeAfter = new Point((int)_shape.W, (int)_shape.H);
             _shape.Resize(_sizeBefore);
         }
     }

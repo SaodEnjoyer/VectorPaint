@@ -29,6 +29,7 @@ namespace VectorPaint.Strategies
             ShapeCollectionMemento shapeCollectionMemento = new ShapeCollectionMemento(createShapeAction);
 
             _shapes.shapeCollectionHistory.Push(shapeCollectionMemento);
+            _shapes.shapeCollectionRollBacks.Clear();
             
         }
 
