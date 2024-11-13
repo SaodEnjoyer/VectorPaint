@@ -37,6 +37,7 @@ namespace VectorPaint
 
         }
 
+
         private void SelectControllerSetup()
         {
             strategyController = new StrategyController();
@@ -208,6 +209,26 @@ namespace VectorPaint
                     AddShapeTS(groupNameForm.GroupName, group);                    
                 }
             }
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            ShapeCollectionMemento memento = null;
+
+            while (memento == null)
+            {
+                if (picture.shapeCollectionHistory.Count() == 0)
+                {
+                    return;
+                }
+
+                memento = picture.shapeCollectionHistory.Pop();
+            }
+
+            
+            memento.UnDo();
+            picture.ClearSelected();
+            pictureBox1.Invalidate();
         }
     }
 }

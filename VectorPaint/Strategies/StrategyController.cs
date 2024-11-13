@@ -8,6 +8,8 @@ namespace VectorPaint
 {
     public class StrategyController
     {
+
+
         private IStrategy _strategy;
 
         public void SetStrategy(IStrategy strategy)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VectorPaint.Actions;
 
 namespace VectorPaint.Strategies
 {
@@ -20,7 +21,15 @@ namespace VectorPaint.Strategies
 
         public void MouseDown(MouseEventArgs e)
         {
-            _shapes.Add(_creator.GetCreator().CreateShape(e.X, e.Y));
+            Shape newShape = _creator.GetCreator().CreateShape(e.X, e.Y).Clone();
+            CreateShapeAction createShapeAction = new CreateShapeAction(newShape, _shapes);
+
+            createShapeAction.Do();
+            
+            ShapeCollectionMemento shapeCollectionMemento = new ShapeCollectionMemento(createShapeAction);
+
+            _shapes.shapeCollectionHistory.Push(shapeCollectionMemento);
+            
         }
 
         public void HandlerDown(object sender, MouseEventArgs e)

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VectorPaint.Actions;
 using static System.Windows.Forms.Control;
 
 namespace VectorPaint
@@ -46,20 +47,16 @@ namespace VectorPaint
         {
             MouseDown += (sender, e) =>
             {
-                List<Shape> listToDelete = new List<Shape>();
-                
+                ShapeActionList actions = new ShapeActionList();
                 foreach (var shape in selectDisplayer.GetShapes())
                 {
                     if (shape.Selected)
                     {
-                        listToDelete.Add(shape);
+                        actions.Add(new DeleteShapeAction(shape, selectDisplayer.GetPicture()));
                     }
                 }
-
-                foreach (var shape in listToDelete)
-                {
-                    shape.Delete();
-                }
+                actions.Do();
+                selectDisplayer.GetPicture().shapeCollectionHistory.Push(new ShapeCollectionMemento(actions));
                 selectDisplayer.GetPictureBox().Invalidate();
             };
             

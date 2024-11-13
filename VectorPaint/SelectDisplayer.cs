@@ -31,6 +31,11 @@ namespace VectorPaint
             return shapes.pictureBox;
         }
 
+        public Picture GetPicture()
+        {
+            return shapes;
+        }
+
         public void Init(ControlCollection control, Picture shapes)
         {
             foreach (var button in selectedButtons)

@@ -49,6 +49,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\CreateShapeAction.cs" />
+    <Compile Include="Actions\DeleteShapeAction.cs" />
+    <Compile Include="Actions\MoveShapeAction.cs" />
+    <Compile Include="Actions\ResizeShapeAction.cs" />
+    <Compile Include="Actions\ShapeActionList.cs" />
     <Compile Include="Creator.cs" />
     <Compile Include="EllipseCreator.cs" />
     <Compile Include="Group.cs" />
@@ -68,6 +73,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Handler.cs" />
+    <Compile Include="Actions\IAction.cs" />
     <Compile Include="Picture.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,6 +85,8 @@
     <Compile Include="SelectedMover.cs" />
     <Compile Include="SelectedScaler.cs" />
     <Compile Include="Shape.cs" />
+    <Compile Include="ShapeCollectionHistory.cs" />
+    <Compile Include="ShapeCollectionMemento.cs" />
     <Compile Include="ShapeCreator.cs" />
     <Compile Include="Strategies\CreateStrategy.cs" />
     <Compile Include="Strategies\GroupStrategy.cs" />

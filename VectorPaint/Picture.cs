@@ -13,13 +13,16 @@ namespace VectorPaint
     public class Picture : IEnumerable<Shape>
     {
         public PictureBox pictureBox;
+
         public SelectDisplayer selectDisplayer = new SelectDisplayer();
+
+        public ShapeCollectionHistory shapeCollectionHistory = new ShapeCollectionHistory();
 
         private static List<Shape> _shapes = new List<Shape>();
 
         public void Add(Shape shapeToCreate)
         {
-            _shapes.Add(shapeToCreate.Clone());
+            _shapes.Add(shapeToCreate);
         }
         public ShapeButton[] GetHandlerButtons()
         {

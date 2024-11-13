@@ -66,13 +66,15 @@ namespace VectorPaint
             }
         }
 
-
-
-
         public virtual void Resize(float ax, float ay)
         {
             W = ax;
             H = ay;
+        }
+        public virtual void Resize(Point point)
+        {
+            W = point.X;
+            H = point.Y;
         }
         public virtual void Move(float ax, float ay)
         {
@@ -106,5 +108,7 @@ namespace VectorPaint
         {
             return null;
         }
+
+
     }
 }

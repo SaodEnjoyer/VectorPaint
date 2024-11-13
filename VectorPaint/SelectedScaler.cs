@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+using VectorPaint.Actions;
 
 namespace VectorPaint
 {
@@ -30,11 +32,21 @@ namespace VectorPaint
 
         public override void SelectAction()
         {
+            ShapeActionList actions = new ShapeActionList();
             MouseDown += (sender, e) =>
             {
                 var mouseEventArgs = e;
                 XBefore = mouseEventArgs.X;
                 YBefore = mouseEventArgs.Y;
+                foreach (var shape in selectDisplayer.GetShapes())
+                {
+                    if (shape.Selected)
+                    {
+                        actions.Add(new MoveShapeAction(shape));
+                        actions.Add(new ResizeShapeAction(shape));
+                    }
+                }
+
                 Activate();
             };
 
@@ -77,6 +89,10 @@ namespace VectorPaint
             MouseUp += (sender, e) =>
             {
                 DeActivate();
+
+                selectDisplayer.GetPicture().shapeCollectionHistory.Push(actions.Count() == 0 ? null : new ShapeCollectionMemento(actions.Clone()));
+                actions.Clear();
+
                 selectDisplayer.GetPictureBox().Invalidate();
             };
 
