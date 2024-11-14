@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VectorPaint.Actions;
 using VectorPaint.Strategies;
 
 namespace VectorPaint
@@ -165,24 +166,26 @@ namespace VectorPaint
             }
 
             Group group = new Group();
-            List<Shape> ShapesToDelete = new List<Shape>();
 
+            List<Shape> shapes = new List<Shape>();
             foreach (var shape in picture)
             {
                 if (shape.Selected)
                 {
-                    group.AddShape(shape.Clone());
-                    ShapesToDelete.Add(shape);
+                    shapes.Add(shape);
                 }
-            }            
-
-            while (ShapesToDelete.Count > 0)
-            {
-                ShapesToDelete[0].Delete();
-                ShapesToDelete.RemoveAt(0);
             }
 
-            picture.Add(group);
+            CreateGroupAction createShapeAction = new CreateGroupAction(group,shapes, picture);
+
+            createShapeAction.Do();
+
+            ShapeCollectionMemento shapeCollectionMemento = new ShapeCollectionMemento(createShapeAction);
+
+            picture.shapeCollectionHistory.Push(shapeCollectionMemento);
+            picture.shapeCollectionRollBacks.Clear();
+            picture.ClearSelected();
+            pictureBox1.Invalidate();
         }
 
         private void toolStripButton4_Click(object sender, EventArgs e)
@@ -230,6 +233,7 @@ namespace VectorPaint
             memento.UnDo();
             picture.shapeCollectionRollBacks.Push(memento);
             picture.ClearSelected();
+            pictureBox1.Refresh();
             pictureBox1.Invalidate();
         }
 
@@ -255,6 +259,7 @@ namespace VectorPaint
             memento.Do();
             picture.shapeCollectionHistory.Push(memento);
             picture.ClearSelected();
+            pictureBox1.Refresh();
             pictureBox1.Invalidate();
         }
     }

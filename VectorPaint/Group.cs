@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Windows.Forms;
 
 namespace VectorPaint
 {
-    public class Group : Shape
+    public class Group : Shape, IEnumerable<Shape>
     {
         private List<Shape> _shapes = new List<Shape>();
         private float lastX;
@@ -14,10 +15,7 @@ namespace VectorPaint
         private float lastW;
         private float lastH;
 
-        public Group()
-        {
-            
-        }
+        public Group() { }
 
         public Group(List<Shape> shapes)
         {
@@ -28,12 +26,10 @@ namespace VectorPaint
             UpdateBounds();
         }
 
-
-
-
         public void AddShape(Shape shape)
         {
-            _shapes.Add(shape.Clone());
+            shape.Move(shape.X - X, shape.Y - Y);
+            _shapes.Add(shape);
             UpdateBounds();
         }
 
@@ -64,10 +60,15 @@ namespace VectorPaint
                 maxY = Math.Max(maxY, shape.Y + shape.H);
             }
 
-            X = minX;
-            Y = minY;
+            X += minX;
+            Y += minY;
             W = maxX - minX;
             H = maxY - minY;
+
+            foreach (var shape in _shapes)
+            {
+                shape.Move(shape.X - minX, shape.Y - minY);
+            }
 
             lastX = X;
             lastY = Y;
@@ -79,10 +80,12 @@ namespace VectorPaint
         {
             if (X == -1 && Y == -1) return;
 
+            g.TranslateTransform(X, Y);
             foreach (var shape in _shapes)
             {
                 shape.Draw(g);
             }
+            g.TranslateTransform(-X, -Y);
         }
 
         public override void Move(float ax, float ay)
@@ -90,11 +93,10 @@ namespace VectorPaint
             float deltaX = ax - lastX;
             float deltaY = ay - lastY;
 
-            foreach (var shape in _shapes)
-            {
-                shape.Move(shape.X + deltaX, shape.Y + deltaY);
-            }
-            UpdateBounds();
+            X += deltaX;
+            Y += deltaY;
+            lastX = X;
+            lastY = Y;
         }
 
         public override void Resize(float ax, float ay)
@@ -113,13 +115,17 @@ namespace VectorPaint
                 float newH = shape.H * scaleH;
                 shape.Resize(newW, newH);
 
-                float relativeX = shape.X - lastX;
-                float relativeY = shape.Y - lastY;
-                float newX = X + relativeX * scaleW;
-                float newY = Y + relativeY * scaleH;
+                float relativeX = shape.X;
+                float relativeY = shape.Y;
+                float newX = relativeX * scaleW;
+                float newY = relativeY * scaleH;
                 shape.Move(newX, newY);
             }
 
+            W = ax;
+            H = ay;
+            lastW = W;
+            lastH = H;
             UpdateBounds();
         }
 
@@ -149,7 +155,9 @@ namespace VectorPaint
 
         public override bool Touch(float ax, float ay)
         {
-            return _shapes.Any(shape => shape.Touch(ax, ay));
+            float localX = ax - X;
+            float localY = ay - Y;
+            return _shapes.Any(shape => shape.Touch(localX, localY));
         }
 
         public override Shape Clone()
@@ -162,19 +170,8 @@ namespace VectorPaint
             return newGroup;
         }
 
-        public override void Delete()
-        {
-            while (_shapes.Count > 0)
-            {
-                _shapes[0].Delete();
-                _shapes.RemoveAt(0);
-            }
-            base.Delete();
-        }
-
         public void SetUp()
         {
-
             if (_shapes == null || _shapes.Count == 0)
             {
                 Clear();
@@ -187,14 +184,23 @@ namespace VectorPaint
             lastY = Y;
             lastW = W;
             lastH = H;
-
-            
         }
+
         public override Creator GetCreator()
         {
-            GroupCreator GroupCreator = new GroupCreator();
-            GroupCreator.SetShape(this.Clone());
-            return GroupCreator;
+            GroupCreator groupCreator = new GroupCreator();
+            groupCreator.SetShape(this.Clone());
+            return groupCreator;
+        }
+
+        public IEnumerator<Shape> GetEnumerator()
+        {
+            return _shapes.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

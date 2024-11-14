@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\CreateGroupAction.cs" />
     <Compile Include="Actions\CreateShapeAction.cs" />
     <Compile Include="Actions\DeleteShapeAction.cs" />
     <Compile Include="Actions\MoveShapeAction.cs" />
